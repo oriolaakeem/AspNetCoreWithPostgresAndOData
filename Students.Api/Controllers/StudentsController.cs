@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Students.Api.Brokers;
 using Students.Api.Models;
 
 namespace Students.Api.Controllers
 {
-    public class StudentsController : ControllerBase
+    public class StudentsController : ODataController
     {
         private readonly StorageBroker _context;
 

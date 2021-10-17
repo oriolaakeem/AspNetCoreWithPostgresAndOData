@@ -1,12 +1,12 @@
-using Microsoft.AspNet.OData.Builder;
-using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
 using Students.Api.Brokers;
 using Students.Api.Models;
 
@@ -26,7 +26,18 @@ namespace Students.Api
         {
             services.AddControllers(mvcOptions => mvcOptions.EnableEndpointRouting = false);
             InitializeStorage(services);
-            services.AddOData();
+            services.AddControllers()
+            .AddOData(o =>
+            {
+                o.AddRouteComponents("odata", GetEdmModel());
+                o.Select();
+                o.Filter();
+                o.Expand();
+                o.Filter();
+                o.OrderBy();
+                o.Count();
+                o.SetMaxTop(100);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,10 +54,15 @@ namespace Students.Api
 
             app.UseAuthorization();
 
-            app.UseMvc(routeBuilder =>
+            //app.UseMvc(routeBuilder =>
+            //{
+            //    routeBuilder.Select().Expand().Filter().Count();
+            //    routeBuilder.MapODataServiceRoute("odata", "odata", GetEdmModel());
+            //});
+
+            app.UseEndpoints(endpoints =>
             {
-                routeBuilder.Select().Expand().Filter().Count();
-                routeBuilder.MapODataServiceRoute("odata", "odata", GetEdmModel());
+                endpoints.MapControllers();
             });
         }
 
